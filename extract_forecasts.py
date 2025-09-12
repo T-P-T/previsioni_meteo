@@ -2,6 +2,7 @@ import argparse
 import datetime
 import json
 import os
+import unicodedata
 from typing import Dict, List, Tuple
 
 import pycountry
@@ -17,17 +18,36 @@ def get_provinces() -> List[str]:
     return sorted(provinces)
 
 
+PROVINCE_ALIASES = {
+    "Barletta-Andria-Trani": "Barletta",
+    "Forlì-Cesena": "Forli",
+    "Massa-Carrara": "Massa",
+    "Monza e Brianza": "Monza",
+    "Pesaro e Urbino": "Pesaro",
+    "Sud Sardegna": "Carbonia",
+    "Verbano-Cusio-Ossola": "Verbania",
+}
+
+
 def geocode(name: str) -> Tuple[float, float]:
     """Return latitude and longitude of a province using Open-Meteo geocoding."""
-    resp = requests.get(
-        "https://geocoding-api.open-meteo.com/v1/search",
-        params={"name": name, "country": "IT", "count": 1, "language": "it"},
-        timeout=10,
-    )
-    data = resp.json()
-    if "results" in data and data["results"]:
-        first = data["results"][0]
-        return first["latitude"], first["longitude"]
+    queries = [PROVINCE_ALIASES.get(name, name)]
+    base = queries[0]
+    simplified = base.replace("-", " ").split()[0]
+    if simplified.lower() != base.lower():
+        queries.append(simplified)
+
+    for query in queries:
+        normalized = unicodedata.normalize("NFKD", query).encode("ascii", "ignore").decode("ascii")
+        resp = requests.get(
+            "https://geocoding-api.open-meteo.com/v1/search",
+            params={"name": normalized, "country": "IT", "count": 1, "language": "it"},
+            timeout=10,
+        )
+        data = resp.json()
+        if "results" in data and data["results"]:
+            first = data["results"][0]
+            return first["latitude"], first["longitude"]
     raise ValueError(f"Coordinate non trovate per {name}")
 
 
