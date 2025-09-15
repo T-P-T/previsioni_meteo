@@ -14,7 +14,8 @@ pip install -r requirements.txt
 python extract_forecasts.py
 ```
 
-I dati vengono salvati nella cartella `data/` con nome `previsioni_<data>.json`.
+I dati vengono salvati nella cartella `data/` con nome `previsioni_<data>.csv`.
+La prima colonna del file contiene la provincia, mentre la prima riga riporta gli orari delle previsioni.
 
 Per testare rapidamente si può limitare il numero di province elaborate:
 

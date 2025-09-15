@@ -1,6 +1,6 @@
 import argparse
+import csv
 import datetime
-import json
 import os
 import unicodedata
 from typing import Dict, List, Tuple
@@ -73,20 +73,30 @@ def main(limit: int | None) -> None:
     if limit:
         provinces = provinces[:limit]
 
-    output: Dict[str, Dict] = {}
+    times: List[str] | None = None
+    rows: List[Tuple[str, List[float]]] = []
     for name in provinces:
         try:
             lat, lon = geocode(name)
             forecast = fetch_forecast(lat, lon)
-            output[name] = forecast
+            if times is None:
+                times = forecast["time"]
+            rows.append((name, forecast["temperature_2m"]))
             print(f"Raccolte previsioni per {name}")
         except Exception as exc:
             print(f"Errore per {name}: {exc}")
 
+    if not rows:
+        print("Nessuna previsione raccolta")
+        return
+
     os.makedirs("data", exist_ok=True)
-    filename = f"data/previsioni_{datetime.date.today().isoformat()}.json"
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(output, f, ensure_ascii=False)
+    filename = f"data/previsioni_{datetime.date.today().isoformat()}.csv"
+    with open(filename, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["provincia"] + (times or []))
+        for province, temps in rows:
+            writer.writerow([province] + temps)
     print(f"Salvati dati in {filename}")
 
 
