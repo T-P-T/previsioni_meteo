@@ -51,7 +51,7 @@ def geocode(name: str) -> Tuple[float, float]:
     raise ValueError(f"Coordinate non trovate per {name}")
 
 
-def fetch_forecast(lat: float, lon: float, days: int = 5) -> Dict:
+def fetch_forecast(lat: float, lon: float, days: int = 10) -> Dict:
     """Fetch hourly temperature forecast for given coordinates."""
     resp = requests.get(
         "https://api.open-meteo.com/v1/forecast",

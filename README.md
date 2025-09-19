@@ -1,6 +1,6 @@
 # Previsioni Meteo Province Italiane
 
-Questo progetto fornisce uno script Python che ogni mattina scarica le previsioni di temperatura oraria per i prossimi cinque giorni di tutte le province italiane utilizzando l'API di [Open‑Meteo](https://open-meteo.com).
+Questo progetto fornisce uno script Python che ogni mattina scarica le previsioni di temperatura oraria per i prossimi dieci giorni di tutte le province italiane utilizzando l'API di [Open‑Meteo](https://open-meteo.com).
 
 ## Installazione
 
