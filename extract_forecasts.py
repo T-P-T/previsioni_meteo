@@ -68,6 +68,12 @@ def fetch_forecast(lat: float, lon: float, days: int = 10) -> Dict:
     return resp.json()["hourly"]
 
 
+def format_temperature(value: float) -> str:
+    """Return the temperature using a comma as decimal separator."""
+
+    return f"{value}".replace(".", ",")
+
+
 def main(limit: int | None) -> None:
     provinces = get_provinces()
     if limit:
@@ -96,7 +102,8 @@ def main(limit: int | None) -> None:
         writer = csv.writer(f)
         writer.writerow(["provincia"] + (times or []))
         for province, temps in rows:
-            writer.writerow([province] + temps)
+            formatted_temps = [format_temperature(temp) for temp in temps]
+            writer.writerow([province] + formatted_temps)
     print(f"Salvati dati in {filename}")
 
 
